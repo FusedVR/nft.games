@@ -19,7 +19,7 @@ contract FusedVRCollection is ERC1155PresetMinterPauser{
 
     constructor(address childChainManager) ERC1155PresetMinterPauser("https://raw.githubusercontent.com/FusedVR/nft.games/master/") {
         name = "FusedVR Render Streaming Collection";
-        symbol = "FSR";
+        symbol = "FRS";
         _setupRole(DEPOSITOR_ROLE, childChainManager);
     }
     
