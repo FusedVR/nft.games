@@ -3,9 +3,11 @@ pragma solidity ^0.8.0;
 
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC1155/presets/ERC1155PresetMinterPauser.sol";
 
-//Child Chain Manager
+// Child Chain Manager
 // 0xb5505a6d998549090530911180f38aC5130101c6 - Mumbai
 // 0xA6FA4fB5f76172d178d61B04b0ecd319C5d1C0aa - Main Polygon
+
+// Located at https://github.com/FusedVR/nft.games/blob/master/Contracts/PolygonMintable1555.sol
 
 contract FusedVRCollection is ERC1155PresetMinterPauser{
     // Contract name
@@ -42,7 +44,7 @@ contract FusedVRCollection is ERC1155PresetMinterPauser{
 
         require(
             user != address(0),
-            "ChildMintableERC1155: INVALID_DEPOSIT_USER"
+            "FusedVRCollection: INVALID_DEPOSIT_USER"
         );
 
         _mintBatch(user, ids, amounts, data);
@@ -70,7 +72,62 @@ contract FusedVRCollection is ERC1155PresetMinterPauser{
         _burnBatch(_msgSender(), ids, amounts);
     }
 
+    /**
+     * @dev Creates `amount` new tokens for `to`, of token type `id`.
+     *
+     * See {ERC1155-_mint}.
+     *
+     * Requirements:
+     *
+     * - the caller must have the `MINTER_ROLE_{id}` or the generic 'MINTER_ROLE'
+     */
+    function mint( address to, uint256 id, uint256 amount, bytes memory data ) 
+    public override {
+        bool roleCheck = hasRole(MINTER_ROLE, _msgSender()) || hasRole(_getMinterRoleID(id), _msgSender());
+        require(roleCheck, "FusedVRCollection: must have minter role to mint");
+
+        _mint(to, id, amount, data);
+    }
+
+    /**
+     * @dev xref:ROOT:erc1155.adoc#batch-operations[Batched] variant of {mint}.
+     * Requirements:
+     *
+     * - the caller must have the the generic 'MINTER_ROLE' and this will not work even if sender has correct IDs
+     */
+    function mintBatch( address to, uint256[] memory ids, uint256[] memory amounts, bytes memory data ) 
+    public override {
+        require(hasRole(MINTER_ROLE, _msgSender()), "FusedVRCollection: must have minter role to mint");
+
+        _mintBatch(to, ids, amounts, data);
+    }
+
     function uri(uint256 id) public view virtual override returns (string memory) {
         return string( abi.encodePacked( super.uri(id), Strings.toString(id), "/meta.json" ));
     }
+
+    /**
+     * @dev Grants minter `role` based on ID to `account`.
+     *
+     * If `account` had not been already granted `role`, emits a {RoleGranted}
+     * event.
+     *
+     * Requirements:
+     *
+     * - the caller must have ``role``'s admin role.
+     */
+    function grantMintIDRole(uint256 id, address account) public virtual {
+         require(hasRole(DEFAULT_ADMIN_ROLE, _msgSender()), "FusedVRCollection: must have admin role to grant minter status");
+        _grantRole(_getMinterRoleID(id), account);
+    }
+
+    /**
+     * @dev Gets the Hash Representation the Minter Role for the given token ID
+     *
+     * Internal function without access restriction.
+     */
+    function _getMinterRoleID(uint256 id) internal virtual returns (bytes32) {
+        return keccak256( abi.encodePacked( "MINTER_ROLE_", Strings.toString(id) ) );
+    }
+
 }
