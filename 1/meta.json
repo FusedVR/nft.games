@@ -1,6 +1,6 @@
 {
   "name": "FusedVR Token",
-  "description": "This token represents the FusedVR ERC-1155 Ticketing System that can be used with Render Streaming",
+  "description": "This token is an example ERC-1155 asset that can be used to trigger streaming with FusedVR Render Streaming. In other words, think of this as token representation of purchasing a game.",
   "image": "https://raw.githubusercontent.com/FusedVR/nft.games/master/1/FusedVR.png",
   "external_url": "https://fusedvr.com/rendering"
 }

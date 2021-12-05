@@ -12,14 +12,11 @@ import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contr
 contract FusedVRCollection is ERC1155PresetMinterPauser{
     // Contract name
     string public name;
-    // Contract symbol
-    string public symbol;
 
     bytes32 public constant DEPOSITOR_ROLE = keccak256("DEPOSITOR_ROLE");
 
     constructor(address childChainManager) ERC1155PresetMinterPauser("https://raw.githubusercontent.com/FusedVR/nft.games/master/") {
         name = "FusedVR Render Streaming Collection";
-        symbol = "FRS";
         _setupRole(DEPOSITOR_ROLE, childChainManager);
     }
     
@@ -129,5 +126,4 @@ contract FusedVRCollection is ERC1155PresetMinterPauser{
     function _getMinterRoleID(uint256 id) internal virtual returns (bytes32) {
         return keccak256( abi.encodePacked( "MINTER_ROLE_", Strings.toString(id) ) );
     }
-
 }
